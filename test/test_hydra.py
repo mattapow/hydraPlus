@@ -1,5 +1,4 @@
-import hydra
-import hydraPlus
+from hydraPlus import HydraPlus, hydra
 import numpy as np
 from pytest import approx
 
@@ -16,7 +15,7 @@ def test_hydraPlus():
         ]
     )
     dim = 2
-    hp_obj = hydraPlus.HydraPlus(dists, dim)
+    hp_obj = HydraPlus(dists, dim)
     stress_emm = hp_obj.embed(equi_adj=0.0, stress=True)
     assert stress_emm["stress_hydraPlus"] < stress_emm["stress_hydra"]
 
@@ -25,7 +24,7 @@ def test_rand():
     dists = np.random.uniform(low=0.0, high=10.0, size=(5, 5))
     dists = (dists + dists.T) / 2.0
     np.fill_diagonal(dists, 0.0)
-    hp_obj = hydraPlus.HydraPlus(dists, dim=2)
+    hp_obj = HydraPlus(dists, dim=2)
     _ = hp_obj.embed(equi_adj=0.0, stress=True)
 
 
@@ -49,7 +48,7 @@ def test_stress_gradient():
         ]
     )
     dim = 2
-    hp_obj = hydraPlus.HydraPlus(dists, dim, curvature=-1.0)
+    hp_obj = HydraPlus(dists, dim, curvature=-1.0)
     stress_grad = hp_obj.get_stress_gradient(loc.flatten())
     stress_grad_true = np.array(
         [
@@ -82,7 +81,7 @@ def test_get_stress():
             [0.0893763, 0.20177165],
         ]
     )
-    hp_obj = hydraPlus.HydraPlus(dists, dim=2)
+    hp_obj = HydraPlus(dists, dim=2)
     stress = hp_obj.get_stress(loc)
     stress_true = 1.31283560338539
     assert stress == approx(stress_true)
