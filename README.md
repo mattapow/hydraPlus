@@ -4,7 +4,7 @@
 ## Install
 ```
 python -m pip install scipy
-python -m pip install .
+python -m pip install -e .
 ```
 
 Credit for algorithm originally in R:
