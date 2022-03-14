@@ -16,7 +16,7 @@ def test_hydraPlus():
     )
     dim = 2
     hp_obj = HydraPlus(dists, dim)
-    stress_emm = hp_obj.embed(equi_adj=0.0, stress=True)
+    stress_emm = hp_obj.embed(equi_adj=0.0)
     assert stress_emm["stress_hydraPlus"] < stress_emm["stress_hydra"]
 
 
@@ -25,7 +25,7 @@ def test_rand():
     dists = (dists + dists.T) / 2.0
     np.fill_diagonal(dists, 0.0)
     hp_obj = HydraPlus(dists, dim=2)
-    _ = hp_obj.embed(equi_adj=0.0, stress=True)
+    _ = hp_obj.embed(equi_adj=0.0)
 
 
 def test_stress_gradient():

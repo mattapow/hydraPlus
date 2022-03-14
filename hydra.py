@@ -4,7 +4,7 @@ import warnings
 import numpy as np
 
 
-def hydra(D, dim=2, curvature=-1.0, alpha=1.1, equi_adj=0.5, **kwargs):
+def hydra(D, dim=2, curvature=-1.0, alpha=1.1, equi_adj=0.5, polar=False, isotropic_adj=True, lorentz=False, stress=False):
     """Strain minimised hyperbolic embedding
     Python Implementation of Martin Keller-Ressel's 2019 CRAN function
     hydra
@@ -32,18 +32,17 @@ def hydra(D, dim=2, curvature=-1.0, alpha=1.1, equi_adj=0.5, **kwargs):
         interpolate between the two extremes. Setting the parameter to non-
         zero values can make the embedding result look more harmoniuous in
         plots. The default is 0.5.
-    **kwargs :
-        polar :
-            Return polar coordinates in dimension 2. This flag is
-            ignored in higher dimension).
-        isotropic_adj :
-            Perform isotropic adjustment, ignoring Eigenvalues
-            (default: TRUE if dim is 2, FALSE else)
-        lorentz :
-            Return raw Lorentz coordinates (before projection to
-            hyperbolic space) (default: FALSE)
-        stress :
-            Return embedding stress
+    polar:
+        Return polar coordinates in dimension 2. This flag is
+        ignored in higher dimension).
+    isotropic_adj :
+        Perform isotropic adjustment, ignoring Eigenvalues
+        (default: TRUE if dim is 2, FALSE else)
+    lorentz:
+        Return raw Lorentz coordinates (before projection to
+        hyperbolic space) (default: FALSE)
+    stress:
+        Return embedding stress
 
 
     Yields
@@ -77,19 +76,12 @@ def hydra(D, dim=2, curvature=-1.0, alpha=1.1, equi_adj=0.5, **kwargs):
                 Lower triangle part is used."
         )
 
-    if dim == 2:
-        # set default values in dimension 2
-        if "isotropic_adj" not in kwargs:
-            kwargs["isotropic_adj"] = True
-        if "polar" in kwargs:
-            kwargs["polar"] = True
-    else:
+    if dim > 2:
         # set default values in dimension > 2
-        if "isotropic_adj" in kwargs:
-            kwargs["isotropic_adj"] = False
-        if "polar" in kwargs:
+        isotropic_adj = False
+        if polar:
             warnings.warn("Polar coordinates only valid in dimension two")
-            kwargs["polar"] = False
+            polar = False
         if equi_adj != 0.0:
             warnings.warn("Equiangular adjustment only possible in dimension two.")
 
@@ -131,7 +123,7 @@ def hydra(D, dim=2, curvature=-1.0, alpha=1.1, equi_adj=0.5, **kwargs):
     x_min = min(x0)  # find minimum
 
     # no isotropic adjustment: rescale Eigenvectors by Eigenvalues
-    if not kwargs.get("isotropic_adj"):
+    if not isotropic_adj:
         if np.array([spec_tail > 0]).any():
             warnings.warn(
                 "Spectral Values have been truncated to zero. Try to use\
@@ -171,11 +163,11 @@ def hydra(D, dim=2, curvature=-1.0, alpha=1.1, equi_adj=0.5, **kwargs):
     output["directional"] = directional
 
     # Set Additional return values
-    if kwargs.get("lorentz"):
+    if lorentz:
         output["x0"] = x0
         output["X"] = X
 
-    if kwargs.get("stress") and kwargs["stress"]:
+    if stress:
         output["stress"] = get_stress_r(r, directional, curvature, D, dim)
 
     output["curvature"] = curvature

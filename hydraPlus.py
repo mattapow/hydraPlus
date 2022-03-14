@@ -13,7 +13,7 @@ class HydraPlus:
         self.curvature = curvature
         self.n_taxa = len(dists)
 
-    def embed(self, alpha=1.1, equi_adj=0.5, maxiter=1000, **kwargs):
+    def embed(self, alpha=1.1, equi_adj=0.5, maxiter=1000):
         """Embed the distance matrix into the Hyperboloic sheet using Hydra+.
         
         Use hydra to initialise points, then run BFGS minimiser to minimise the
@@ -26,7 +26,7 @@ class HydraPlus:
             curvature=self.curvature,
             alpha=alpha,
             equi_adj=equi_adj,
-            **kwargs
+            stress=True,
         )
         loc_poin = np.tile(emm["r"], (self.dim, 1)).T * emm["directional"]
         loc_hyp_sheet = self.poincare_to_sheet(loc_poin)
