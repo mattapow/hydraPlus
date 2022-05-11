@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 
-import hydra
+from hydraPlus import hydra
 
 
 class HydraPlus:
