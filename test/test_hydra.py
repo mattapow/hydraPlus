@@ -16,8 +16,8 @@ def test_hydraPlus():
         ]
     )
     dim = 2
-    hp_obj = hydraPlus.HydraPlus(dists, dim)
-    stress_emm = hp_obj.embed(equi_adj=0.0)
+    hp_obj = hydraPlus.HydraPlus(dists, dim, equi_adj=0.0)
+    stress_emm = hp_obj.embed()
     assert stress_emm["stress_hydraPlus"] < stress_emm["stress_hydra"]
 
 
@@ -25,8 +25,8 @@ def test_rand():
     dists = np.random.uniform(low=0.0, high=10.0, size=(5, 5))
     dists = (dists + dists.T) / 2.0
     np.fill_diagonal(dists, 0.0)
-    hp_obj = hydraPlus.HydraPlus(dists, dim=2)
-    _ = hp_obj.embed(equi_adj=0.0)
+    hp_obj = hydraPlus.HydraPlus(dists, dim=2, equi_adj=0.0)
+    _ = hp_obj.embed()
 
 
 def test_stress_gradient():
@@ -50,7 +50,7 @@ def test_stress_gradient():
     )
     dim = 2
     hp_obj = hydraPlus.HydraPlus(dists, dim, curvature=-1.0)
-    stress_grad = hp_obj.get_stress_gradient(loc.flatten())
+    stress_grad = hp_obj.dstress_dx(loc.flatten())
     stress_grad_true = np.array(
         [
             [2.4939401, 0.6992880],
@@ -63,7 +63,7 @@ def test_stress_gradient():
     assert stress_grad == approx(stress_grad_true)
 
 
-def test_get_stress():
+def test_get_stress_x():
     dists = np.array(
         [
             [0.0, 0.82291866, 0.82291866, 0.99150298, 0.82291866],
@@ -83,7 +83,7 @@ def test_get_stress():
         ]
     )
     hp_obj = hydraPlus.HydraPlus(dists, dim=2)
-    stress = hp_obj.get_stress(loc)
+    stress = hp_obj.get_stress_x(loc)
     stress_true = 1.31283560338539
     assert stress == approx(stress_true)
 
@@ -137,11 +137,29 @@ def test_hydra_3d_compare_output():
     assert emm["directional"] == approx(
         np.array(
             [
-                [0.0821320214, -0.7981301820, 0.5968605730],
-                [-0.5711268681, -0.6535591501, -0.4966634050],
-                [-0.2070516064, 0.6620783581, 0.7202651457],
-                [0.0811501819, 0.1418186867, -0.9865607473],
-                [0.8008637619, 0.2731045145, 0.5329457375],
+                [0.0821320214, 0.7981301820, -0.5968605730],
+                [-0.5711268681, 0.6535591501, 0.4966634050],
+                [-0.2070516064, -0.6620783581, -0.7202651457],
+                [0.0811501819, -0.1418186867, 0.9865607473],
+                [0.8008637619, -0.2731045145, -0.5329457375],
             ]
         )
     )
+
+
+def test_curve_embed():
+    # dists from birth (2.0) death (0.5) tree
+    dists = np.array(
+        [
+            [0.0, 0.82291866, 0.82291866, 0.99150298, 0.82291866],
+            [0.82291866, 0.0, 0.0, 0.99150298, 0.1656876],
+            [0.82291866, 0.0, 0.0, 0.99150298, 0.1656876],
+            [0.99150298, 0.99150298, 0.99150298, 0.0, 0.99150298],
+            [0.82291866, 0.1656876, 0.1656876, 0.99150298, 0.0],
+        ]
+    )
+    dim = 2
+    hp_obj = hydraPlus.HydraPlus(dists, dim, curvature=-1.0)
+    emm = hp_obj.curve_embed()
+    # check that the curvature changed
+    assert np.abs(emm["curvature"] + 1.0) > 0.0001
