@@ -70,7 +70,7 @@ class HydraPlus:
             loc_hyp_exact,
             method="BFGS",
             jac=self.dstress_dx,
-            options={"disp": False, "maxiter": self.max_iter},
+            options={"disp": False},
         )
         final_exact = optimizer.x.reshape((self.n_taxa, self.dim))
 

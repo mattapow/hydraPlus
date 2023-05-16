@@ -159,7 +159,7 @@ def test_curve_embed():
         ]
     )
     dim = 2
-    hp_obj = hydraPlus.HydraPlus(dists, dim, curvature=-1.0)
+    hp_obj = hydraPlus.HydraPlus(dists, dim, curvature=-1.0, max_iter=10)
     emm = hp_obj.curve_embed()
     # check that the curvature changed
     assert np.abs(emm["curvature"] + 1.0) > 0.0001
