@@ -27,8 +27,8 @@ class HydraPlus:
         Whilst, it's possible to run the location and curvature jointly. Better
         results seemling from running them seperately.
         """
-        print(f"Initial curvature given {self.curvature}.")
-        print("Optimising to given distances:", flush=True)
+        print(f"Initial curvature given {self.curvature:.4}.")
+        print("Optimising curvature to given distances:", flush=True)
         optimizer = minimize(
             self.get_stress_curvature,
             self.curvature,
@@ -38,7 +38,7 @@ class HydraPlus:
             options={"disp": False, "maxiter": self.max_iter},
         )
         print("Local optima found.")
-        print(f"Setting curvature to: {optimizer.x[0]}", flush=True)
+        print(f"Setting curvature to: {optimizer.x[0]:.4}", flush=True)
         return self.embed()
 
     def get_stress_curvature(self, curvature):
